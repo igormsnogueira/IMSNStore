@@ -1,0 +1,31 @@
+version: '3.7'
+
+services:
+  app:
+    build:
+      context: ../
+      dockerfile: ./docker/app/Dockerfile
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: gvenzl/oracle-free:23.4-slim
+    environment:
+      - ORACLE_PASSWORD=abcd1234
+      - ORACLE_PDB=FREEPDB1 
+      - ORACLE_USER=ADMIN
+    ports:
+      - "1521:1521"
+    volumes:
+      - ./oracle_db:/container-entrypoint-initdb.d
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
